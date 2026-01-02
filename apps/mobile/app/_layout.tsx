@@ -14,7 +14,6 @@ export default function RootLayout() {
 
   const isAuthRoute = segments[0] === "login" || segments[0] === "signup";
   const isCoachRoute = user?.role === "coach";
-  console.log("user?.role: ", user?.role);
 
   const isOnCoachRoute = segments[0] === "coach";
 
