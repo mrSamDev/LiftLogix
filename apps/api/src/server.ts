@@ -1,19 +1,19 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
-import type { Context } from "hono";
+import { authMiddleware, type AuthVariables } from "@src/middleware/auth";
+import { corsMiddleware } from "@src/middleware/cors";
+import routes from "./routes";
 
-const app = new Hono();
+const app = new Hono<{ Variables: AuthVariables }>();
 
-app.use(
-  "*",
-  cors({
-    origin: "http://localhost:3000",
-    allowMethods: ["GET", "POST", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use("*", corsMiddleware);
 
-app.get("/", (c: Context) => c.text("Hono!"));
+app.use(async (c, next) => {
+  console.log(`[${c.req.method}] ${c.req.url}`);
+  await next();
+});
+
+app.use("*", authMiddleware);
+
+app.route("/", routes);
 
 export default app;

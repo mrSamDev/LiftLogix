@@ -1,8 +1,18 @@
 import { Text, View, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import { authClient, removeToken } from "../src/lib/auth";
+import { useAuthState } from "../src/store/authState";
 
 export default function Index() {
-  const router = useRouter();
+  const { setAuthenticated } = useAuthState();
+  const logout = async () => {
+    try {
+      await authClient.signOut({});
+      removeToken();
+      setAuthenticated(false);
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
 
   return (
     <View
@@ -14,7 +24,7 @@ export default function Index() {
     >
       <Text>Edit app/index.tsx to edit this screen.</Text>
       <TouchableOpacity
-        onPress={() => router.push("/dashboard")}
+        onPress={logout}
         style={{
           marginTop: 20,
           paddingHorizontal: 20,
@@ -23,7 +33,7 @@ export default function Index() {
           borderRadius: 5,
         }}
       >
-        <Text style={{ color: "white" }}>Dashboard</Text>
+        <Text style={{ color: "white" }}>Logout</Text>
       </TouchableOpacity>
     </View>
   );
