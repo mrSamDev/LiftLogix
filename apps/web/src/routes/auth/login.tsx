@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
-import { useStore } from "../../lib/mockStore";
+import { useSignIn } from "@/api/auth/hooks";
 
 export const Route = createFileRoute("/auth/login")({
   component: Login,
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/auth/login")({
 
 function Login() {
   const navigate = useNavigate();
-  const login = useStore((state) => state.login);
+  const { mutateAsync: signIn, isPending } = useSignIn();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
@@ -19,12 +19,13 @@ function Login() {
       password: "",
     },
     onSubmit: async ({ value }) => {
-      const user = login(value.email);
-
-      if (user) {
+      try {
+        setError("");
+        await signIn(value);
         navigate({ to: "/app/dashboard" });
-      } else {
-        setError("Invalid email. Try: admin@demo.com, coach@demo.com, or user1@demo.com");
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Invalid credentials";
+        setError(errorMessage);
       }
     },
   });
@@ -32,9 +33,7 @@ function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-5">
       <div className="w-full max-w-md border-4 border-black bg-white p-12">
-        <h1 className="mb-12 text-center text-6xl font-bold uppercase leading-none tracking-tighter">
-          Login
-        </h1>
+        <h1 className="mb-12 text-center text-6xl font-bold uppercase leading-none tracking-tighter">Login</h1>
 
         {error && (
           <div className="mb-8 border-4 border-black bg-white p-4">
@@ -52,9 +51,7 @@ function Login() {
           <form.Field name="email">
             {(field) => (
               <div className="mb-6">
-                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-                  Email
-                </label>
+                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">Email</label>
                 <input
                   type="email"
                   placeholder="admin@demo.com"
@@ -70,9 +67,7 @@ function Login() {
           <form.Field name="password">
             {(field) => (
               <div className="mb-8">
-                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-                  Password
-                </label>
+                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">Password</label>
                 <div className="flex border-4 border-black bg-white">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -82,11 +77,7 @@ function Login() {
                     onBlur={field.handleBlur}
                     className="flex-1 bg-transparent px-4 py-4 font-mono font-bold outline-none focus:bg-lime-400"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="border-l-4 border-black px-4 font-mono font-bold uppercase transition-all hover:bg-lime-400"
-                  >
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="border-l-4 border-black px-4 font-mono font-bold uppercase transition-all hover:bg-lime-400">
                     {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
@@ -96,19 +87,11 @@ function Login() {
 
           <button
             type="submit"
-            className="mb-6 w-full border-4 border-black bg-lime-400 py-4 font-bold uppercase tracking-tight transition-all hover:translate-x-1 hover:translate-y-1 active:translate-x-0 active:translate-y-0"
+            disabled={isPending}
+            className="mb-6 w-full border-4 border-black bg-lime-400 py-4 font-bold uppercase tracking-tight transition-all hover:translate-x-1 hover:translate-y-1 active:translate-x-0 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Login
+            {isPending ? "Signing in..." : "Login"}
           </button>
-
-          <div className="border-t-4 border-black pt-6">
-            <p className="mb-2 font-mono text-xs font-bold uppercase tracking-wider">
-              Demo Accounts:
-            </p>
-            <p className="font-mono text-sm font-bold">admin@demo.com</p>
-            <p className="font-mono text-sm font-bold">coach@demo.com</p>
-            <p className="font-mono text-sm font-bold">user1@demo.com</p>
-          </div>
         </form>
       </div>
     </div>

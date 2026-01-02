@@ -1,24 +1,21 @@
-import { createFileRoute, Outlet, useNavigate, Link } from "@tanstack/react-router";
-import { useStore } from "../lib/mockStore";
-import { useEffect } from "react";
+import { createFileRoute, Outlet, Link, redirect } from "@tanstack/react-router";
+import { getSessionInfo } from "@/api/auth/api";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
+  beforeLoad: async () => {
+    const sessionData = await getSessionInfo();
+    if (!sessionData) {
+      throw redirect({
+        to: "/auth/login",
+      });
+    }
+    return { sessionData };
+  },
 });
 
 function AppLayout() {
-  const navigate = useNavigate();
-  const { currentUser, isAuthenticated } = useStore();
-
-  useEffect(() => {
-    if (!isAuthenticated || !currentUser) {
-      navigate({ to: "/auth/login" });
-    }
-  }, [isAuthenticated, currentUser, navigate]);
-
-  if (!currentUser) {
-    return null;
-  }
+  const { sessionData } = Route.useRouteContext();
 
   return (
     <div className="min-h-screen bg-white">
@@ -26,9 +23,7 @@ function AppLayout() {
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex h-20 items-center justify-between">
             <div className="flex items-center gap-12">
-              <h1 className="text-2xl font-bold uppercase tracking-tighter">
-                Lift Logic
-              </h1>
+              <h1 className="text-2xl font-bold uppercase tracking-tighter">Lift Logic</h1>
               <div className="flex gap-0">
                 <Link
                   to="/app/dashboard"
@@ -37,7 +32,7 @@ function AppLayout() {
                 >
                   Dashboard
                 </Link>
-                {currentUser.role === "admin" && (
+                {sessionData.user.role === "admin" && (
                   <>
                     <Link
                       to="/app/organizations"
@@ -55,23 +50,15 @@ function AppLayout() {
                     </Link>
                   </>
                 )}
-                <Link
-                  to="/app/profile"
-                  className="px-6 py-2 font-bold uppercase transition-all hover:bg-lime-400"
-                  activeProps={{ className: "bg-lime-400 px-6 py-2 font-bold uppercase" }}
-                >
+                <Link to="/app/profile" className="px-6 py-2 font-bold uppercase transition-all hover:bg-lime-400" activeProps={{ className: "bg-lime-400 px-6 py-2 font-bold uppercase" }}>
                   Profile
                 </Link>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="border-4 border-black bg-white px-4 py-2">
-                <span className="font-mono text-sm font-bold uppercase">
-                  {currentUser.name}
-                </span>
-                <span className="ml-3 border-l-4 border-black pl-3 font-mono text-sm font-bold uppercase">
-                  {currentUser.role}
-                </span>
+                <span className="font-mono text-sm font-bold uppercase">{sessionData.user.name}</span>
+                <span className="ml-3 border-l-4 border-black pl-3 font-mono text-sm font-bold uppercase">{sessionData.user.role}</span>
               </div>
               <Link
                 to="/auth/logout"

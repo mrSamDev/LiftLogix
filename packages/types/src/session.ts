@@ -1,3 +1,5 @@
+import type { User } from "./user";
+
 export type Session = {
   id: string;
   createdAt: Date;
@@ -7,4 +9,9 @@ export type Session = {
   token: string;
   ipAddress?: string | null;
   userAgent?: string | null;
+};
+
+export type SessionWithUser = {
+  session: Session;
+  user: User;
 };
