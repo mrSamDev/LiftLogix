@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "reac
 import { useForm } from "@tanstack/react-form";
 import { Link, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import type { User } from "@lift-logic/types";
 
 import { authClient, setToken } from "../../src/lib/auth";
 import { useAuthState } from "../../src/store/authState";
@@ -10,25 +11,21 @@ import { Button } from "../../src/components";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const { setAuthenticated } = useAuthState();
+  const { actions } = useAuthState();
 
   const form = useForm({
     defaultValues: {
-      email: "test@example.com",
-      password: "password123",
+      email: "coach@liftlogic.com",
+      password: "Coach123!",
     },
     onSubmit: async ({ value }) => {
       try {
-        console.log("Login submitted:", value);
         const response = await authClient.signIn.email(value);
         await setToken(response.data?.token || "");
-        await setAuthenticated(true);
-        console.log("response: ", response);
+        actions.setAuthenticated(true);
+        actions.setUser(response.data?.user as User);
         router.replace("/");
-      } catch (error) {
-        console.log("error: ", error);
-        console.error("Login failed:", error);
-      }
+      } catch (error) {}
     },
   });
 

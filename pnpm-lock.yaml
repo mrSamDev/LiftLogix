@@ -14,9 +14,9 @@ importers:
 
   apps/api:
     dependencies:
-      '@better-auth/expo':
-        specifier: ^1.4.10
-        version: 1.4.10(@better-auth/core@1.4.10(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.4))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))(better-auth@1.4.10(mongodb@7.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(expo-constants@18.0.12)(expo-linking@8.0.11(react@19.1.0))(expo-web-browser@15.0.10)
+      '@lift-logic/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       better-auth:
         specifier: ^1.4.10
         version: 1.4.10(mongodb@7.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -42,6 +42,9 @@ importers:
       '@expo/vector-icons':
         specifier: ^15.0.3
         version: 15.0.3(expo-font@14.0.10(expo@54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      '@lift-logic/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@react-navigation/bottom-tabs':
         specifier: ^7.4.0
         version: 7.9.0(@react-navigation/native@7.1.26(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-safe-area-context@5.6.2(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-screens@4.16.0(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -138,6 +141,12 @@ importers:
         version: 10.0.0(eslint@9.39.2)(typescript@5.9.3)
       typescript:
         specifier: ~5.9.2
+        version: 5.9.3
+
+  packages/types:
+    dependencies:
+      typescript:
+        specifier: ^5
         version: 5.9.3
 
 packages:
@@ -662,25 +671,6 @@ packages:
       jose: ^6.1.0
       kysely: ^0.28.5
       nanostores: ^1.0.1
-
-  '@better-auth/expo@1.4.10':
-    resolution: {integrity: sha512-dTRschxNgOVlT1hhuXJa41eF4prAqEJYznqyTEf1DYgWHRGHDczVZhqPAswUqIBSQR22y9PhQwyVGWG3hADEKg==}
-    peerDependencies:
-      '@better-auth/core': 1.4.10
-      better-auth: 1.4.10
-      expo-constants: '>=17.0.0'
-      expo-linking: '>=7.0.0'
-      expo-network: ^8.0.7
-      expo-web-browser: '>=14.0.0'
-    peerDependenciesMeta:
-      expo-constants:
-        optional: true
-      expo-linking:
-        optional: true
-      expo-network:
-        optional: true
-      expo-web-browser:
-        optional: true
 
   '@better-auth/telemetry@1.4.10':
     resolution: {integrity: sha512-Dq4XJX6EKsUu0h3jpRagX739p/VMOTcnJYWRrLtDYkqtZFg+sFiFsSWVcfapZoWpRSUGYX9iKwl6nDHn6Ju2oQ==}
@@ -4177,8 +4167,8 @@ packages:
     resolution: {integrity: sha512-hdF5ZgjTqgAntKkklYw0R03MG2x/bSzTtkxmIRw/sTNV8YXsCJ1tfLAX23lhxhHJlEf3CRCOCGGWw3vI3GaSPw==}
     engines: {node: '>=18'}
 
-  ts-api-utils@2.3.0:
-    resolution: {integrity: sha512-6eg3Y9SF7SsAvGzRHQvvc1skDAhwI4YQ32ui1scxD1Ccr0G5qIIbUBT3pFTKX8kmWIQClHobtUdNuaBgwdfdWg==}
+  ts-api-utils@2.4.0:
+    resolution: {integrity: sha512-3TaVTaAv2gTiMB35i3FiGJaRfwb3Pyn/j3m/bfAvGe8FB7CF6u+LMYqYlDh7reQf7UNvoTvdfAqHGmPGOSsPmA==}
     engines: {node: '>=18.12'}
     peerDependencies:
       typescript: '>=4.8.4'
@@ -5132,18 +5122,6 @@ snapshots:
       kysely: 0.28.9
       nanostores: 1.1.0
       zod: 4.3.4
-
-  '@better-auth/expo@1.4.10(@better-auth/core@1.4.10(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.4))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))(better-auth@1.4.10(mongodb@7.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(expo-constants@18.0.12)(expo-linking@8.0.11(react@19.1.0))(expo-web-browser@15.0.10)':
-    dependencies:
-      '@better-auth/core': 1.4.10(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.4))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
-      '@better-fetch/fetch': 1.1.21
-      better-auth: 1.4.10(mongodb@7.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      better-call: 1.1.7(zod@4.3.4)
-      zod: 4.3.4
-    optionalDependencies:
-      expo-constants: 18.0.12(expo@54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))
-      expo-linking: 8.0.11(expo@54.0.30)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
-      expo-web-browser: 15.0.10(expo@54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))
 
   '@better-auth/telemetry@1.4.10(@better-auth/core@1.4.10(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.4))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))':
     dependencies:
@@ -6188,7 +6166,7 @@ snapshots:
       eslint: 9.39.2
       ignore: 7.0.5
       natural-compare: 1.4.0
-      ts-api-utils: 2.3.0(typescript@5.9.3)
+      ts-api-utils: 2.4.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -6230,7 +6208,7 @@ snapshots:
       '@typescript-eslint/utils': 8.51.0(eslint@9.39.2)(typescript@5.9.3)
       debug: 4.4.3
       eslint: 9.39.2
-      ts-api-utils: 2.3.0(typescript@5.9.3)
+      ts-api-utils: 2.4.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -6247,7 +6225,7 @@ snapshots:
       minimatch: 9.0.5
       semver: 7.7.3
       tinyglobby: 0.2.15
-      ts-api-utils: 2.3.0(typescript@5.9.3)
+      ts-api-utils: 2.4.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -9242,7 +9220,7 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  ts-api-utils@2.3.0(typescript@5.9.3):
+  ts-api-utils@2.4.0(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
 

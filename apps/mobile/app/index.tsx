@@ -3,12 +3,12 @@ import { authClient, removeToken } from "../src/lib/auth";
 import { useAuthState } from "../src/store/authState";
 
 export default function Index() {
-  const { setAuthenticated } = useAuthState();
+  const { actions } = useAuthState();
   const logout = async () => {
     try {
       await authClient.signOut({});
       removeToken();
-      setAuthenticated(false);
+      actions.setAuthenticated(false);
     } catch (error) {
       console.log("error: ", error);
     }

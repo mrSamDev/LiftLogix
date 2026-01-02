@@ -1,4 +1,5 @@
 import type { Context, Next } from "hono";
+import type { User, Session } from "@lift-logic/types";
 import { createAuth, type Auth } from "../auth";
 
 let auth: Auth | null = null;
@@ -17,8 +18,8 @@ export function getAuth(): Auth {
 }
 
 export type AuthVariables = {
-  user: ReturnType<typeof getAuth>["$Infer"]["Session"]["user"] | null;
-  session: ReturnType<typeof getAuth>["$Infer"]["Session"]["session"] | null;
+  user: User | null;
+  session: Session | null;
 };
 
 export async function authMiddleware(c: Context, next: Next) {
