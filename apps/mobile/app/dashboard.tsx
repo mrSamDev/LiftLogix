@@ -1,4 +1,6 @@
 import { Text, View } from "react-native";
+import { Button } from "../src/components";
+import { authClient } from "../src/lib/auth";
 
 export default function Dashboard() {
   return (
