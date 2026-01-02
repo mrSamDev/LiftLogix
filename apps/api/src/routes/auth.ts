@@ -3,6 +3,6 @@ import { Hono } from "hono";
 
 const routes = new Hono();
 
-routes.on(["POST", "GET"], "/api/auth/*", (c) => getAuth().handler(c.req.raw));
+routes.on(["POST", "GET"], "/auth/*", (c) => getAuth().handler(c.req.raw));
 
 export default routes;

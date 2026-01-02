@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useStore } from "../../../lib/mockStore";
-import type { Organization, User } from "../../../types/domain";
+import {
+  useUsers,
+  useUpdateUser,
+  getUsersByOrganizationId,
+  getCoachesByOrganizationId,
+} from "../../../features/users";
+import type { User } from "../../../features/users";
+import type { Organization } from "../../../types/domain";
 
 export const Route = createFileRoute("/app/organizations/$id")({
   component: OrganizationDetail,
@@ -9,20 +16,26 @@ export const Route = createFileRoute("/app/organizations/$id")({
 
 function OrganizationDetail() {
   const { id } = Route.useParams();
-  const {
-    getOrganizationById,
-    getCoachesByOrganizationId,
-    getUsersByOrganizationId,
-    updateOrganization,
-    updateUser,
-  } = useStore();
+  const { getOrganizationById, updateOrganization } = useStore();
+  const { data: allUsers = [], isLoading } = useUsers();
+  const updateUserMutation = useUpdateUser();
 
   const [isEditingOrg, setIsEditingOrg] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
   const organization = getOrganizationById(id);
-  const coaches = getCoachesByOrganizationId(id);
-  const users = getUsersByOrganizationId(id);
+  const coaches = getCoachesByOrganizationId(allUsers, id);
+  const users = getUsersByOrganizationId(allUsers, id);
+
+  if (isLoading) {
+    return (
+      <div className="border-4 border-black bg-white p-8">
+        <p className="text-lg font-bold uppercase tracking-tight">
+          LOADING...
+        </p>
+      </div>
+    );
+  }
 
   if (!organization) {
     return (
@@ -46,7 +59,7 @@ function OrganizationDetail() {
   };
 
   const handleUpdateUser = (userId: string, updates: Partial<User>) => {
-    updateUser(userId, updates);
+    updateUserMutation.mutate({ id: userId, updates });
     setEditingUserId(null);
   };
 

@@ -14,9 +14,15 @@ importers:
 
   apps/api:
     dependencies:
+      '@hono/zod-validator':
+        specifier: ^0.7.6
+        version: 0.7.6(hono@4.11.3)(zod@4.3.4)
       '@lift-logic/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@lift-logic/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       better-auth:
         specifier: ^1.4.10
         version: 1.4.10(mongodb@7.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)
@@ -32,6 +38,9 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+      zod:
+        specifier: ^4.3.4
+        version: 4.3.4
     devDependencies:
       '@types/bun':
         specifier: latest
@@ -148,6 +157,9 @@ importers:
       '@lift-logic/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@lift-logic/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(rolldown-vite@7.2.5(@types/node@24.10.4)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -223,6 +235,15 @@ importers:
         version: rolldown-vite@7.2.5(@types/node@24.10.4)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/types:
+    dependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+
+  packages/utils:
     dependencies:
       typescript:
         specifier: ^5
@@ -1137,6 +1158,12 @@ packages:
   '@expo/xcpretty@4.3.2':
     resolution: {integrity: sha512-ReZxZ8pdnoI3tP/dNnJdnmAk7uLT4FjsKDGW7YeDdvdOMz2XCQSmSCM9IWlrXuWtMF9zeSB6WJtEhCQ41gQOfw==}
     hasBin: true
+
+  '@hono/zod-validator@0.7.6':
+    resolution: {integrity: sha512-Io1B6d011Gj1KknV4rXYz4le5+5EubcWEU/speUjuw9XMMIaP3n78yXLhjd2A3PXaXaUwEAluOiAyLqhBEJgsw==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.25.0 || ^4.0.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -6370,6 +6397,11 @@ snapshots:
       chalk: 4.1.2
       find-up: 5.0.0
       js-yaml: 4.1.1
+
+  '@hono/zod-validator@0.7.6(hono@4.11.3)(zod@4.3.4)':
+    dependencies:
+      hono: 4.11.3
+      zod: 4.3.4
 
   '@humanfs/core@0.19.1': {}
 

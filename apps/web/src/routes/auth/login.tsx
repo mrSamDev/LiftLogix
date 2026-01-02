@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
-import { useSignIn } from "@/api/auth/hooks";
+import { safetry } from "@lift-logic/utils";
+import { useSignIn } from "@/features/auth";
 
 export const Route = createFileRoute("/auth/login")({
   component: Login,
@@ -15,18 +16,20 @@ function Login() {
 
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "admin@liftlogic.com",
+      password: "Admin123!",
     },
     onSubmit: async ({ value }) => {
-      try {
-        setError("");
-        await signIn(value);
-        navigate({ to: "/app/dashboard" });
-      } catch (err) {
+      setError("");
+      const [err] = await safetry(signIn({ email: value.email, password: value.password }));
+
+      if (err) {
         const errorMessage = err instanceof Error ? err.message : "Invalid credentials";
         setError(errorMessage);
+        return;
       }
+
+      navigate({ to: "/app/dashboard" });
     },
   });
 

@@ -1,15 +1,18 @@
 import { createFileRoute, Outlet, Link, redirect } from "@tanstack/react-router";
-import { getSessionInfo } from "@/api/auth/api";
+import { safetry } from "@lift-logic/utils";
+import { getSession } from "@/features/auth";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
   beforeLoad: async () => {
-    const sessionData = await getSessionInfo();
-    if (!sessionData) {
+    const [error, sessionData] = await safetry(getSession());
+
+    if (error || !sessionData) {
       throw redirect({
         to: "/auth/login",
       });
     }
+
     return { sessionData };
   },
 });

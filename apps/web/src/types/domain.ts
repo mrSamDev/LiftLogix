@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "coach" | "user";
+import type { User } from "../features/users";
 
 export type GeoLocation = {
   latitude: number;
@@ -10,15 +10,6 @@ export type Organization = {
   title: string;
   imageUrl: string;
   geoLocation: GeoLocation;
-};
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  organizationId: string | null;
-  coachId: string | null;
 };
 
 export type AuthSession = {

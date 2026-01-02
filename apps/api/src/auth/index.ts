@@ -62,6 +62,11 @@ export function createAuth() {
           defaultValue: true,
           input: false,
         },
+        orgId: {
+          type: "string",
+          required: false,
+          input: true,
+        },
       },
     },
 

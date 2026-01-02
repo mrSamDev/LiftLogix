@@ -1,7 +1,10 @@
-import type { User } from './user';
-import type { Session } from './session';
+import { z } from "zod";
+import { UserSchema } from "./user";
+import { SessionSchema } from "./session";
 
-export type AuthContext = {
-  user: User | null;
-  session: Session | null;
-};
+export const AuthContextSchema = z.object({
+  user: UserSchema.nullable(),
+  session: SessionSchema.nullable(),
+});
+
+export interface AuthContext extends z.infer<typeof AuthContextSchema> {}

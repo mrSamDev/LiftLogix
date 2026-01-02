@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useStore } from "../../../lib/mockStore";
-import { canCreateOrganization } from "../../../lib/permissions";
+import { canCreateOrganization } from "../../../features/users";
 import type { Organization } from "../../../types/domain";
 
 export const Route = createFileRoute("/app/organizations/")({
