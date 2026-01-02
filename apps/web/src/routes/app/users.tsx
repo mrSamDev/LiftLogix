@@ -1,21 +1,25 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useStore } from "../../lib/mockStore";
-import { canCreateUser, canAssignCoach, UserTable, CreateUserModal, useUsers, useCreateUser, useUpdateUser, getCoaches } from "../../features/users";
-import type { User } from "../../features/users";
+import { canCreateUser, canAssignCoach, canDeleteUser, UserTable, CreateUserModal, useUsers, useCreateUser, useUpdateUser, useDeleteUser, getCoaches } from "../../features/users";
+import type { UserInput } from "../../features/users";
+import { useOrganizations } from "../../features/organizations";
+import { useSession } from "../../features/auth";
 
 export const Route = createFileRoute("/app/users")({
   component: Users,
 });
 
 function Users() {
-  const { currentUser, organizations } = useStore();
-  console.log("currentUser: ", currentUser);
+  const { data: organizations = [] } = useOrganizations();
+  const { data: session } = useSession();
+
+  const currentUser = session?.user || null;
+
   const { data: users = [], isLoading } = useUsers();
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser();
+  const deleteUserMutation = useDeleteUser();
   const [isCreating, setIsCreating] = useState(false);
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
   if (!currentUser || !canCreateUser(currentUser)) {
     return (
@@ -51,13 +55,13 @@ function Users() {
         users={users}
         coaches={coaches}
         currentUser={currentUser}
-        editingUserId={editingUserId}
         canAssignCoach={canAssignCoach(currentUser)}
-        onEditCoach={(userId) => setEditingUserId(userId)}
-        onCancelEdit={() => setEditingUserId(null)}
+        canDelete={canDeleteUser(currentUser)}
         onUpdateCoach={(userId, coachId) => {
           updateUserMutation.mutate({ id: userId, updates: { coachId } });
-          setEditingUserId(null);
+        }}
+        onDeleteUser={(userId) => {
+          deleteUserMutation.mutate(userId);
         }}
       />
 
@@ -66,7 +70,7 @@ function Users() {
           organizations={organizations}
           coaches={coaches}
           onCancel={() => setIsCreating(false)}
-          onCreate={(user: Omit<User, "id">) => {
+          onCreate={(user: UserInput) => {
             createUserMutation.mutate(user);
             setIsCreating(false);
           }}

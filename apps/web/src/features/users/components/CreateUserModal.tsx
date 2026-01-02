@@ -1,11 +1,11 @@
-import type { User } from "../types";
+import type { User, UserInput } from "../types";
 import { CreateUserForm } from "./CreateUserForm";
 
 type CreateUserModalProps = {
   organizations: any[];
   coaches: User[];
   onCancel: () => void;
-  onCreate: (user: User) => void;
+  onCreate: (user: UserInput) => void;
 };
 
 export function CreateUserModal({

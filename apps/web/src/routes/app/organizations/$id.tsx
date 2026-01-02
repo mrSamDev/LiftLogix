@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useStore } from "../../../lib/mockStore";
+import {
+  useOrganization,
+  useUpdateOrganization,
+  EditOrganizationModal,
+} from "../../../features/organizations";
+import type { OrganizationUpdate } from "../../../features/organizations";
 import {
   useUsers,
   useUpdateUser,
@@ -8,7 +13,6 @@ import {
   getCoachesByOrganizationId,
 } from "../../../features/users";
 import type { User } from "../../../features/users";
-import type { Organization } from "../../../types/domain";
 
 export const Route = createFileRoute("/app/organizations/$id")({
   component: OrganizationDetail,
@@ -16,23 +20,23 @@ export const Route = createFileRoute("/app/organizations/$id")({
 
 function OrganizationDetail() {
   const { id } = Route.useParams();
-  const { getOrganizationById, updateOrganization } = useStore();
-  const { data: allUsers = [], isLoading } = useUsers();
+  const { data: organization, isLoading: isLoadingOrg } = useOrganization(id);
+  const { data: allUsers = [], isLoading: isLoadingUsers } = useUsers();
+  const updateOrganizationMutation = useUpdateOrganization();
   const updateUserMutation = useUpdateUser();
 
   const [isEditingOrg, setIsEditingOrg] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
-  const organization = getOrganizationById(id);
   const coaches = getCoachesByOrganizationId(allUsers, id);
   const users = getUsersByOrganizationId(allUsers, id);
+
+  const isLoading = isLoadingOrg || isLoadingUsers;
 
   if (isLoading) {
     return (
       <div className="border-4 border-black bg-white p-8">
-        <p className="text-lg font-bold uppercase tracking-tight">
-          LOADING...
-        </p>
+        <p className="text-lg font-bold uppercase tracking-tight">LOADING...</p>
       </div>
     );
   }
@@ -53,8 +57,8 @@ function OrganizationDetail() {
     );
   }
 
-  const handleUpdateOrg = (updates: Partial<Organization>) => {
-    updateOrganization(id, updates);
+  const handleUpdateOrg = (updates: OrganizationUpdate) => {
+    updateOrganizationMutation.mutate({ id, updates });
     setIsEditingOrg(false);
   };
 
@@ -86,15 +90,11 @@ function OrganizationDetail() {
       </div>
 
       {isEditingOrg && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
-          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto border-4 border-black bg-white">
-            <EditOrganizationForm
-              organization={organization}
-              onCancel={() => setIsEditingOrg(false)}
-              onSave={handleUpdateOrg}
-            />
-          </div>
-        </div>
+        <EditOrganizationModal
+          organization={organization}
+          onCancel={() => setIsEditingOrg(false)}
+          onSave={handleUpdateOrg}
+        />
       )}
 
       <div className="mb-8 border-4 border-black bg-white">
@@ -208,129 +208,18 @@ function OrganizationDetail() {
       </div>
 
       {editingUserId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
-          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto border-4 border-black bg-white">
-            <EditUserForm
-              user={[...coaches, ...users].find((u) => u.id === editingUserId)!}
-              coaches={coaches}
-              onCancel={() => setEditingUserId(null)}
-              onSave={(updates) => handleUpdateUser(editingUserId, updates)}
-            />
-          </div>
-        </div>
+        <EditUserModal
+          user={[...coaches, ...users].find((u) => u.id === editingUserId)!}
+          coaches={coaches}
+          onCancel={() => setEditingUserId(null)}
+          onSave={(updates) => handleUpdateUser(editingUserId, updates)}
+        />
       )}
     </div>
   );
 }
 
-function EditOrganizationForm({
-  organization,
-  onCancel,
-  onSave,
-}: {
-  organization: Organization;
-  onCancel: () => void;
-  onSave: (updates: Partial<Organization>) => void;
-}) {
-  const [title, setTitle] = useState(organization.title);
-  const [imageUrl, setImageUrl] = useState(organization.imageUrl);
-  const [latitude, setLatitude] = useState(organization.geoLocation.latitude.toString());
-  const [longitude, setLongitude] = useState(organization.geoLocation.longitude.toString());
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave({
-      title,
-      imageUrl,
-      geoLocation: {
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
-      },
-    });
-  };
-
-  return (
-    <div className="p-8">
-      <h2 className="mb-8 border-b-4 border-black pb-4 text-2xl font-bold uppercase tracking-tight">
-        Edit Organization
-      </h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-            Name
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
-          />
-        </div>
-
-        <div className="mb-6">
-          <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-            Image URL
-          </label>
-          <input
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            required
-            className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
-          />
-        </div>
-
-        <div className="mb-8 grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-              Latitude
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={latitude}
-              onChange={(e) => setLatitude(e.target.value)}
-              required
-              className="w-full border-4 border-black bg-white px-4 py-3 font-mono font-bold outline-none focus:bg-lime-400"
-            />
-          </div>
-          <div>
-            <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-              Longitude
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={longitude}
-              onChange={(e) => setLongitude(e.target.value)}
-              required
-              className="w-full border-4 border-black bg-white px-4 py-3 font-mono font-bold outline-none focus:bg-lime-400"
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            className="flex-1 border-4 border-black bg-lime-400 px-6 py-3 font-bold uppercase tracking-tight transition-all hover:translate-x-1 hover:translate-y-1 active:translate-x-0 active:translate-y-0"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="flex-1 border-4 border-black bg-white px-6 py-3 font-bold uppercase tracking-tight transition-all hover:translate-x-1 hover:translate-y-1 active:translate-x-0 active:translate-y-0"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function EditUserForm({
+function EditUserModal({
   user,
   coaches,
   onCancel,
@@ -355,73 +244,77 @@ function EditUserForm({
   };
 
   return (
-    <div className="p-8">
-      <h2 className="mb-8 border-b-4 border-black pb-4 text-2xl font-bold uppercase tracking-tight">
-        Edit {user.role === "coach" ? "Coach" : "User"}
-      </h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-            Name
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
-          />
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto border-4 border-black bg-white">
+        <div className="p-8">
+          <h2 className="mb-8 border-b-4 border-black pb-4 text-2xl font-bold uppercase tracking-tight">
+            Edit {user.role === "coach" ? "Coach" : "User"}
+          </h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6">
+              <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
+                Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
+              />
+            </div>
 
-        <div className="mb-6">
-          <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
-          />
-        </div>
+            <div className="mb-6">
+              <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
+              />
+            </div>
 
-        {user.role === "user" && (
-          <div className="mb-8">
-            <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-              Coach
-            </label>
-            <select
-              value={coachId}
-              onChange={(e) => setCoachId(e.target.value)}
-              className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
-            >
-              <option value="">No Coach</option>
-              {coaches.map((coach) => (
-                <option key={coach.id} value={coach.id}>
-                  {coach.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+            {user.role === "user" && (
+              <div className="mb-8">
+                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
+                  Coach
+                </label>
+                <select
+                  value={coachId}
+                  onChange={(e) => setCoachId(e.target.value)}
+                  className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
+                >
+                  <option value="">No Coach</option>
+                  {coaches.map((coach) => (
+                    <option key={coach.id} value={coach.id}>
+                      {coach.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            className="flex-1 border-4 border-black bg-lime-400 px-6 py-3 font-bold uppercase tracking-tight transition-all hover:translate-x-1 hover:translate-y-1 active:translate-x-0 active:translate-y-0"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="flex-1 border-4 border-black bg-white px-6 py-3 font-bold uppercase tracking-tight transition-all hover:translate-x-1 hover:translate-y-1 active:translate-x-0 active:translate-y-0"
-          >
-            Cancel
-          </button>
+            <div className="flex gap-4">
+              <button
+                type="submit"
+                className="flex-1 border-4 border-black bg-lime-400 px-6 py-3 font-bold uppercase tracking-tight transition-all hover:translate-x-1 hover:translate-y-1 active:translate-x-0 active:translate-y-0"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={onCancel}
+                className="flex-1 border-4 border-black bg-white px-6 py-3 font-bold uppercase tracking-tight transition-all hover:translate-x-1 hover:translate-y-1 active:translate-x-0 active:translate-y-0"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -6,6 +6,8 @@ export {
   canViewUser,
   getAccessibleUserIds,
   hasRole,
+  canDeleteUser,
+  canDeleteOrganization,
 } from "./permissions";
 
 export {

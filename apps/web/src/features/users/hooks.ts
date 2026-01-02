@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { User } from "@lift-logic/types";
+import type { User, UserInput, UserUpdate } from "@lift-logic/types";
 import { getUsers, createUser, updateUser, deleteUser } from "./api";
 
 const USERS_QUERY_KEY = ["users"];
@@ -15,7 +15,7 @@ export function useCreateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (user: Omit<User, "id">) => createUser(user),
+    mutationFn: (user: UserInput) => createUser(user),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
     },
@@ -26,7 +26,7 @@ export function useUpdateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<User> }) =>
+    mutationFn: ({ id, updates }: { id: string; updates: UserUpdate }) =>
       updateUser(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });

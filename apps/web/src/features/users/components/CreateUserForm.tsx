@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { User, UserRole } from "../types";
+import type { User, UserRole, UserInput } from "../types";
 
 type CreateUserFormProps = {
   organizations: any[];
   coaches: User[];
   onCancel: () => void;
-  onCreate: (user: User) => void;
+  onCreate: (user: UserInput) => void;
 };
 
 export function CreateUserForm({
@@ -17,19 +17,16 @@ export function CreateUserForm({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<UserRole>("user");
-  const [organizationId, setOrganizationId] = useState("");
-  const [coachId, setCoachId] = useState("");
+  const [orgId, setOrgId] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newUser: User = {
-      id: `user_${Date.now()}`,
+    const newUser: UserInput = {
       name,
       email,
       role,
-      organizationId: organizationId || null,
-      coachId: role === "user" && coachId ? coachId : null,
+      orgId: orgId || undefined,
     };
 
     onCreate(newUser);
@@ -82,13 +79,13 @@ export function CreateUserForm({
           </select>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-8">
           <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
             Organization
           </label>
           <select
-            value={organizationId}
-            onChange={(e) => setOrganizationId(e.target.value)}
+            value={orgId}
+            onChange={(e) => setOrgId(e.target.value)}
             className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
           >
             <option value="">None</option>
@@ -99,26 +96,6 @@ export function CreateUserForm({
             ))}
           </select>
         </div>
-
-        {role === "user" && (
-          <div className="mb-8">
-            <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider">
-              Coach
-            </label>
-            <select
-              value={coachId}
-              onChange={(e) => setCoachId(e.target.value)}
-              className="w-full border-4 border-black bg-white px-4 py-3 font-bold outline-none focus:bg-lime-400"
-            >
-              <option value="">None</option>
-              {coaches.map((coach) => (
-                <option key={coach.id} value={coach.id}>
-                  {coach.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
 
         <div className="flex gap-4">
           <button
