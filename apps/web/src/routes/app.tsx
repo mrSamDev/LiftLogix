@@ -53,6 +53,15 @@ function AppLayout() {
                     </Link>
                   </>
                 )}
+
+                <Link
+                  to="/app/exercises"
+                  className="border-r-4 border-black px-6 py-2 font-bold uppercase transition-all hover:bg-lime-400"
+                  activeProps={{ className: "bg-lime-400 px-6 py-2 font-bold uppercase" }}
+                >
+                  Exercises
+                </Link>
+
                 <Link to="/app/profile" className="px-6 py-2 font-bold uppercase transition-all hover:bg-lime-400" activeProps={{ className: "bg-lime-400 px-6 py-2 font-bold uppercase" }}>
                   Profile
                 </Link>

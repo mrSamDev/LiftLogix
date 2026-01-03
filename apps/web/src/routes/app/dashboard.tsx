@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useStore } from "../../lib/mockStore";
-import { useUsers, getUsersByCoachId } from "../../features/users";
+import { useUsers } from "../../features/users";
 
 export const Route = createFileRoute("/app/dashboard")({
   component: Dashboard,
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/app/dashboard")({
 
 function Dashboard() {
   const navigate = useNavigate();
-  const { currentUser, organizations } = useStore();
+  const { currentUser } = useStore();
   const { data: users = [], isLoading } = useUsers();
 
   if (!currentUser) {
@@ -24,7 +24,7 @@ function Dashboard() {
   }
 
   if (currentUser.role === "admin") {
-    return <AdminDashboard users={users} organizations={organizations} navigate={navigate} />;
+    return <AdminDashboard users={users} organizations={[]} navigate={navigate} />;
   }
 
   if (currentUser.role === "coach") {

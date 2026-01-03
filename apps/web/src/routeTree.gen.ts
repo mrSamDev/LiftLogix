@@ -19,6 +19,7 @@ import { Route as AppProfileRouteImport } from './routes/app/profile'
 import { Route as AppDashboardRouteImport } from './routes/app/dashboard'
 import { Route as AppOrganizationsRouteRouteImport } from './routes/app/organizations/route'
 import { Route as AppOrganizationsIndexRouteImport } from './routes/app/organizations/index'
+import { Route as AppExercisesIndexRouteImport } from './routes/app/exercises/index'
 import { Route as AppOrganizationsIdRouteImport } from './routes/app/organizations/$id'
 
 const AuthRoute = AuthRouteImport.update({
@@ -71,6 +72,11 @@ const AppOrganizationsIndexRoute = AppOrganizationsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppOrganizationsRouteRoute,
 } as any)
+const AppExercisesIndexRoute = AppExercisesIndexRouteImport.update({
+  id: '/exercises/',
+  path: '/exercises/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppOrganizationsIdRoute = AppOrganizationsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/app/organizations/$id': typeof AppOrganizationsIdRoute
+  '/app/exercises': typeof AppExercisesIndexRoute
   '/app/organizations/': typeof AppOrganizationsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/app/organizations/$id': typeof AppOrganizationsIdRoute
+  '/app/exercises': typeof AppExercisesIndexRoute
   '/app/organizations': typeof AppOrganizationsIndexRoute
 }
 export interface FileRoutesById {
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/app/organizations/$id': typeof AppOrganizationsIdRoute
+  '/app/exercises/': typeof AppExercisesIndexRoute
   '/app/organizations/': typeof AppOrganizationsIndexRoute
 }
 export interface FileRouteTypes {
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/logout'
     | '/app/organizations/$id'
+    | '/app/exercises'
     | '/app/organizations/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/logout'
     | '/app/organizations/$id'
+    | '/app/exercises'
     | '/app/organizations'
   id:
     | '__root__'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/logout'
     | '/app/organizations/$id'
+    | '/app/exercises/'
     | '/app/organizations/'
   fileRoutesById: FileRoutesById
 }
@@ -235,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrganizationsIndexRouteImport
       parentRoute: typeof AppOrganizationsRouteRoute
     }
+    '/app/exercises/': {
+      id: '/app/exercises/'
+      path: '/exercises'
+      fullPath: '/app/exercises'
+      preLoaderRoute: typeof AppExercisesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/organizations/$id': {
       id: '/app/organizations/$id'
       path: '/$id'
@@ -265,6 +284,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppProfileRoute: typeof AppProfileRoute
   AppUsersRoute: typeof AppUsersRoute
+  AppExercisesIndexRoute: typeof AppExercisesIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -272,6 +292,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppProfileRoute: AppProfileRoute,
   AppUsersRoute: AppUsersRoute,
+  AppExercisesIndexRoute: AppExercisesIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
