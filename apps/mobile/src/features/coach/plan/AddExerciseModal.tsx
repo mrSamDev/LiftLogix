@@ -1,6 +1,8 @@
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import { useForm } from "@tanstack/react-form";
 import { Input } from "../../../components/Input";
+import { Dropdown } from "../../../components/Dropdown";
+import { useExercises } from "./hooks/useExercises";
 
 export interface Exercise {
   id: string;
@@ -18,7 +20,7 @@ interface AddExerciseModalProps {
 }
 
 interface ExerciseFormData {
-  name: string;
+  exerciseId: string;
   sets: string;
   reps: string;
   weight: string;
@@ -26,10 +28,10 @@ interface ExerciseFormData {
   notes: string;
 }
 
-function parseExerciseForm(value: ExerciseFormData): Exercise {
+function parseExerciseForm(value: ExerciseFormData, exerciseName: string): Exercise {
   return {
     id: Date.now().toString(),
-    name: value.name,
+    name: exerciseName,
     sets: parseInt(value.sets) || 0,
     reps: parseInt(value.reps) || 0,
     weight: value.weight ? parseInt(value.weight) : undefined,
@@ -39,20 +41,30 @@ function parseExerciseForm(value: ExerciseFormData): Exercise {
 }
 
 export function AddExerciseModal({ onAdd, onCancel }: AddExerciseModalProps) {
+  const { data: exercises = [], isLoading } = useExercises();
+
   const exerciseForm = useForm({
     defaultValues: {
-      name: "",
-      sets: "",
-      reps: "",
-      weight: "",
-      restTime: "",
-      notes: "",
+      exerciseId: "",
+      sets: "10",
+      reps: "10",
+      weight: "10",
+      restTime: "10",
+      notes: "Demo notes",
     },
     onSubmit: async ({ value }) => {
-      const exercise = parseExerciseForm(value);
+      const selectedExercise = exercises.find((ex) => ex.id === value.exerciseId);
+      if (!selectedExercise) return;
+
+      const exercise = parseExerciseForm(value, selectedExercise.title);
       onAdd(exercise);
     },
   });
+
+  const exerciseOptions = exercises.map((ex) => ({
+    label: ex.title,
+    value: ex.id,
+  }));
 
   return (
     <View style={styles.modalOverlay}>
@@ -60,29 +72,38 @@ export function AddExerciseModal({ onAdd, onCancel }: AddExerciseModalProps) {
         <ScrollView style={styles.modalContent}>
           <Text style={styles.modalTitle}>Add Exercise</Text>
 
-          <exerciseForm.Field name="name">
-            {(field) => <Input label="Exercise Name" placeholder="e.g., Bench Press" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} />}
-          </exerciseForm.Field>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#00D9C0" />
+              <Text style={styles.loadingText}>Loading exercises...</Text>
+            </View>
+          ) : (
+            <>
+              <exerciseForm.Field name="exerciseId">
+                {(field) => <Dropdown label="Exercise" placeholder="Select an exercise" value={field.state.value} options={exerciseOptions} onChange={field.handleChange} />}
+              </exerciseForm.Field>
 
-          <exerciseForm.Field name="sets">
-            {(field) => <Input label="Sets" placeholder="0" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} keyboardType="numeric" />}
-          </exerciseForm.Field>
+              <exerciseForm.Field name="sets">
+                {(field) => <Input label="Sets" placeholder="0" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} keyboardType="numeric" />}
+              </exerciseForm.Field>
 
-          <exerciseForm.Field name="reps">
-            {(field) => <Input label="Reps" placeholder="0" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} keyboardType="numeric" />}
-          </exerciseForm.Field>
+              <exerciseForm.Field name="reps">
+                {(field) => <Input label="Reps" placeholder="0" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} keyboardType="numeric" />}
+              </exerciseForm.Field>
 
-          <exerciseForm.Field name="weight">
-            {(field) => <Input label="Weight (kg)" placeholder="Optional" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} keyboardType="numeric" />}
-          </exerciseForm.Field>
+              <exerciseForm.Field name="weight">
+                {(field) => <Input label="Weight (kg)" placeholder="Optional" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} keyboardType="numeric" />}
+              </exerciseForm.Field>
 
-          <exerciseForm.Field name="restTime">
-            {(field) => <Input label="Rest Time (seconds)" placeholder="Optional" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} keyboardType="numeric" />}
-          </exerciseForm.Field>
+              <exerciseForm.Field name="restTime">
+                {(field) => <Input label="Rest Time (seconds)" placeholder="Optional" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} keyboardType="numeric" />}
+              </exerciseForm.Field>
 
-          <exerciseForm.Field name="notes">
-            {(field) => <Input label="Notes" placeholder="Optional notes" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} multiline numberOfLines={2} />}
-          </exerciseForm.Field>
+              <exerciseForm.Field name="notes">
+                {(field) => <Input label="Notes" placeholder="Optional notes" value={field.state.value} onChangeText={field.handleChange} onBlur={field.handleBlur} multiline numberOfLines={2} />}
+              </exerciseForm.Field>
+            </>
+          )}
         </ScrollView>
 
         <View style={styles.modalFooter}>
@@ -124,6 +145,16 @@ const styles = StyleSheet.create({
     color: "#000000",
     marginBottom: 24,
     letterSpacing: -0.5,
+  },
+  loadingContainer: {
+    paddingVertical: 48,
+    alignItems: "center",
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#666666",
   },
   modalFooter: {
     flexDirection: "row",

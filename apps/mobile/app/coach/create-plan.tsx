@@ -1,24 +1,15 @@
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 
 import { Input } from "../../src/components/Input";
+import { Switch } from "../../src/components/Switch";
 import { AddExerciseModal, Exercise } from "../../src/features/coach/plan/AddExerciseModal";
+import { useCreatePlan } from "../../src/features/coach/plan/hooks/useCreatePlan";
 
-interface PlanFormData {
-  title: string;
-  description: string;
-  scheduledDate: string;
-  planNotes: string;
-}
-
-function addExerciseToList(
-  exercise: Exercise,
-  exercises: Exercise[],
-  setExercises: (exercises: Exercise[]) => void
-) {
+function addExerciseToList(exercise: Exercise, exercises: Exercise[], setExercises: (exercises: Exercise[]) => void) {
   setExercises([...exercises, exercise]);
 }
 
@@ -29,15 +20,51 @@ export default function CreatePlan() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [showAddExercise, setShowAddExercise] = useState(false);
 
+  const { mutate: createPlan, isPending } = useCreatePlan();
+
   const form = useForm({
     defaultValues: {
-      title: "",
-      description: "",
-      scheduledDate: "",
-      planNotes: "",
+      title: "Upper Body Strength",
+      description: "Upper body workout focusing on strength building",
+      scheduledDate: "2026-07-01",
+      planNotes: "Plan to be followed for 8 weeks",
+      isPublic: false,
     },
     onSubmit: async ({ value }) => {
-      console.log("Create plan", { ...value, exercises, clientId });
+      if (exercises.length === 0) {
+        Alert.alert("No Exercises", "Please add at least one exercise to the plan");
+        return;
+      }
+
+      const planData = {
+        clientId,
+        title: value.title,
+        description: value.description,
+        exercises: exercises.map((ex) => ({
+          id: ex.id,
+          name: ex.name,
+          sets: ex.sets,
+          reps: ex.reps,
+          weight: ex.weight || 0,
+          restTime: ex.restTime || 0,
+          notes: ex.notes,
+        })),
+        isPublic: value.isPublic,
+        planNotes: value.planNotes,
+        scheduledDate: value.scheduledDate,
+      };
+
+      console.log("planData: ", planData);
+
+      createPlan(planData, {
+        onSuccess: () => {
+          Alert.alert("Success", "Plan created successfully");
+          router.back();
+        },
+        onError: (error) => {
+          Alert.alert("Error", error.message || "Failed to create plan");
+        },
+      });
     },
   });
 
@@ -99,6 +126,8 @@ export default function CreatePlan() {
               />
             )}
           </form.Field>
+
+          <form.Field name="isPublic">{(field) => <Switch label="Public Plan" value={field.state.value} onValueChange={field.handleChange} />}</form.Field>
         </View>
 
         {exercises.length > 0 && (
@@ -124,8 +153,8 @@ export default function CreatePlan() {
         <Pressable style={({ pressed }) => [styles.cancelButton, pressed && styles.buttonPressed]} onPress={() => router.back()}>
           <Text style={styles.cancelText}>Cancel</Text>
         </Pressable>
-        <Pressable style={({ pressed }) => [styles.createButton, pressed && styles.buttonPressed]} onPress={() => form.handleSubmit()}>
-          <Text style={styles.createButtonText}>Create Plan</Text>
+        <Pressable style={({ pressed }) => [styles.createButton, pressed && styles.buttonPressed, isPending && styles.buttonDisabled]} onPress={() => form.handleSubmit()} disabled={isPending}>
+          <Text style={styles.createButtonText}>{isPending ? "Creating..." : "Create Plan"}</Text>
         </Pressable>
       </View>
 
@@ -193,6 +222,9 @@ const styles = StyleSheet.create({
   },
   buttonPressed: {
     transform: [{ translateY: 2 }],
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   exerciseList: {
     marginHorizontal: 24,

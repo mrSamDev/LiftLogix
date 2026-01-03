@@ -1,16 +1,15 @@
 import { Hono } from "hono";
+import { zValidator } from "@hono/zod-validator";
+import { UserInputSchema, UserUpdateSchema } from "@lift-logic/types";
 import { adminMiddleware } from "@src/middleware/admin";
-import createUser from "./create";
-import editUser from "./edit";
-import deleteUser from "./delete";
-import getUsers from "./get";
+import * as userController from "@src/controllers/users";
 
 const users = new Hono();
 
 users.use("/users/*", adminMiddleware);
-users.route("/users", getUsers);
-users.route("/users", createUser);
-users.route("/users", editUser);
-users.route("/users", deleteUser);
+users.get("/users", userController.getUsers);
+users.post("/users", zValidator("json", UserInputSchema), userController.createUser);
+users.patch("/users/:id", zValidator("json", UserUpdateSchema), userController.updateUser);
+users.delete("/users/:id", userController.deleteUser);
 
 export default users;

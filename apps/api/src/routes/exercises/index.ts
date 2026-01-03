@@ -1,14 +1,13 @@
 import { Hono } from "hono";
-import createExercise from "./create";
-import deleteExercise from "./delete";
-import getExercises from "./get";
-import getExerciseById from "./getById";
+import { zValidator } from "@hono/zod-validator";
+import { ExerciseInputSchema } from "@lift-logic/types";
+import * as exerciseController from "@src/controllers/exercises";
 
 const exercises = new Hono();
 
-exercises.route("/exercises", getExercises);
-exercises.route("/exercises", getExerciseById);
-exercises.route("/exercises", createExercise);
-exercises.route("/exercises", deleteExercise);
+exercises.get("/exercises", exerciseController.getExercises);
+exercises.get("/exercises/:id", exerciseController.getExerciseById);
+exercises.post("/exercises", zValidator("json", ExerciseInputSchema), exerciseController.createExercise);
+exercises.delete("/exercises/:id", exerciseController.deleteExercise);
 
 export default exercises;
