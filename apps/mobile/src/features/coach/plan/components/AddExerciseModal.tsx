@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import { useForm } from "@tanstack/react-form";
-import { Input } from "../../../components/Input";
-import { Dropdown } from "../../../components/Dropdown";
-import { useExercises } from "./hooks/useExercises";
+import { Input } from "../../../../components/Input";
+import { Dropdown } from "../../../../components/Dropdown";
+import { useExercises } from "../hooks/useExercises";
 
 export interface Exercise {
   id: string;

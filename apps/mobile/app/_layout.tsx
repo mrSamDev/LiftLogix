@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Stack, Redirect, useSegments, useRootNavigationState } from "expo-router";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useAuthState } from "../src/store/authState";
 import { queryClient } from "../src/lib/queryClient";
 
@@ -8,6 +9,7 @@ export default function RootLayout() {
   const segments = useSegments();
   const navigationState = useRootNavigationState();
   const { isAuthenticated, actions, user } = useAuthState();
+  console.log("user: ", user);
 
   useEffect(() => {
     if (!navigationState?.key) return;
@@ -16,8 +18,9 @@ export default function RootLayout() {
 
   const isAuthRoute = segments[0] === "login" || segments[0] === "signup";
   const isCoachRoute = user?.role === "coach";
-
+  const isUserRoute = user?.role === "user";
   const isOnCoachRoute = segments[0] === "coach";
+  const isOnUserRoute = segments[0] === "user";
 
   if (!isAuthenticated && !isAuthRoute) {
     return <Redirect href="/login" />;
@@ -27,17 +30,23 @@ export default function RootLayout() {
     return <Redirect href="/coach/(tabs)" />;
   }
 
+  if (isAuthenticated && isUserRoute && !isOnUserRoute) {
+    return <Redirect href="/user/(tabs)" />;
+  }
+
   if (isAuthenticated && isAuthRoute) {
     return <Redirect href="/" />;
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }

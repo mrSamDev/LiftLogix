@@ -4,28 +4,29 @@ import mongoose from "mongoose";
 import { ObjectId } from "mongodb";
 
 export async function createPlan(c: Context) {
-  console.log("createPlan called");
   const data = c.req.valid("json");
-  console.log("data: ", data);
+
   const db = mongoose.connection.db;
+
+  const user = c.get("user");
+  console.log("user: ", user);
 
   if (!db) {
     return c.json({ error: "Database not connected" }, 500);
   }
 
   const plan = {
-    client_id: data.clientId,
+    coachId: user.id,
+    clientId: data.clientId,
     title: data.title,
     description: data.description,
     exercises: data.exercises,
-    is_public: data.isPublic,
-    plan_notes: data.planNotes,
-    scheduled_date: data.scheduledDate,
+    isPublic: data.isPublic,
+    planNotes: data.planNotes,
+    scheduledDate: data.scheduledDate,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
-
-  console.log("plan: ", plan);
 
   const [error, result] = await safetry(db.collection("plans").insertOne(plan));
 
@@ -75,12 +76,13 @@ export async function getPlans(c: Context) {
 export async function getPlanById(c: Context) {
   const id = c.req.param("id");
   const db = mongoose.connection.db;
+  const user = c.get("user");
 
   if (!db) {
     return c.json({ error: "Database not connected" }, 500);
   }
 
-  const [error, plan] = await safetry(db.collection("plans").findOne({ _id: new ObjectId(id) }));
+  const [error, plan] = await safetry(db.collection("plans").findOne({ _id: new ObjectId(id), coachId: user._id }));
 
   if (error) {
     return c.json(

@@ -34,6 +34,13 @@ export const UserSchema = z.object({
   isActive: z.boolean().optional(),
   orgId: z.string().optional(),
   coachId: z.string().nullable().optional(),
+  metrics: z
+    .object({
+      weight: z.number().optional(),
+      height: z.number().optional(),
+      bodyFat: z.number().optional(),
+    })
+    .optional(),
 });
 
 export interface User extends z.infer<typeof UserSchema> {}

@@ -6,7 +6,7 @@ import { useForm } from "@tanstack/react-form";
 
 import { Input } from "../../src/components/Input";
 import { Switch } from "../../src/components/Switch";
-import { AddExerciseModal, Exercise } from "../../src/features/coach/plan/AddExerciseModal";
+import { AddExerciseModal, Exercise } from "../../src/features/coach/plan/components/AddExerciseModal";
 import { useCreatePlan } from "../../src/features/coach/plan/hooks/useCreatePlan";
 
 function addExerciseToList(exercise: Exercise, exercises: Exercise[], setExercises: (exercises: Exercise[]) => void) {

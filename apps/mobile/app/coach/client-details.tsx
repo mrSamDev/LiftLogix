@@ -1,48 +1,92 @@
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
+import type { Plan } from "@lift-logic/types";
 
-interface WorkoutPlan {
+import { useClients } from "../../src/features/coach/client/hooks/useClients";
+import { useGetPlansByUser } from "../../src/features/coach/plan/hooks/useGetPlanUser";
+import { useAuthState } from "../../src/store/authState";
+import { PlanItem } from "../../src/features/coach/plan/components/PlanItem";
+import { ConfirmModal } from "../../src/components/ConfirmModal";
+
+interface Client {
   id: string;
-  title: string;
-  description: string;
-  date: string;
-  status: "assigned" | "completed" | "in_progress";
+  name: string;
+  email: string;
 }
 
-const MOCK_CLIENT = {
-  id: "1",
-  name: "Mike Thompson",
-  email: "mike.t@example.com",
-  image: null,
-  metrics: {
-    weight: 82,
-    height: 180,
-    bodyFat: 15,
-  },
-  workoutPlans: [
-    {
-      id: "1",
-      title: "Full Body Workout",
-      description: "Compound movements for overall strength",
-      date: "5/1/2026",
-      status: "assigned" as const,
-    },
-    {
-      id: "2",
-      title: "HIIT Cardio",
-      description: "High intensity interval training",
-      date: "3/1/2026",
-      status: "assigned" as const,
-    },
-  ],
-};
+function findClient(clients: Client[] | undefined, clientId: string) {
+  return clients?.find((c) => c.id === clientId) || null;
+}
+
+type ConfirmAction = {
+  type: "delete" | "unassign";
+  planId: string;
+  planTitle: string;
+} | null;
 
 export default function ClientDetails() {
   const params = useLocalSearchParams();
   const clientId = params.id as string;
 
-  const client = MOCK_CLIENT;
+  const { user } = useAuthState();
+  const { data: clients } = useClients();
+  const { data: plans, isLoading, isError } = useGetPlansByUser(clientId);
+
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+
+  const client = findClient(clients, clientId);
+
+  function handleEdit(planId: string) {
+    console.log("Edit plan:", planId);
+  }
+
+  function handleDelete(planId: string) {
+    const plan = plans?.find((p) => p.id === planId);
+    if (!plan) return;
+
+    setConfirmAction({
+      type: "delete",
+      planId,
+      planTitle: plan.title,
+    });
+  }
+
+  function handleUnassign(planId: string) {
+    const plan = plans?.find((p) => p.id === planId);
+    if (!plan) return;
+
+    setConfirmAction({
+      type: "unassign",
+      planId,
+      planTitle: plan.title,
+    });
+  }
+
+  function confirmDelete() {
+    if (!confirmAction || confirmAction.type !== "delete") return;
+
+    console.log("Confirmed delete:", confirmAction.planId);
+    setConfirmAction(null);
+  }
+
+  function confirmUnassign() {
+    if (!confirmAction || confirmAction.type !== "unassign") return;
+
+    console.log("Confirmed unassign:", confirmAction.planId);
+    setConfirmAction(null);
+  }
+
+  function handleConfirm() {
+    if (!confirmAction) return;
+
+    if (confirmAction.type === "delete") {
+      confirmDelete();
+    } else {
+      confirmUnassign();
+    }
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -51,75 +95,115 @@ export default function ClientDetails() {
           <Text style={styles.backText}>← Back</Text>
         </Pressable>
 
-      <View style={styles.profileCard}>
-        <View style={styles.avatarContainer}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {client.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()}
-            </Text>
-          </View>
-        </View>
-
-        <Text style={styles.clientName}>{client.name}</Text>
-        <Text style={styles.clientEmail}>{client.email}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Metrics</Text>
-        <View style={styles.metricsGrid}>
-          <View style={[styles.metricCard, styles.metricCardMint]}>
-            <Text style={styles.metricValue}>{client.metrics.weight}</Text>
-            <Text style={styles.metricLabel}>kg</Text>
-          </View>
-
-          <View style={[styles.metricCard, styles.metricCardMint]}>
-            <Text style={styles.metricValue}>{client.metrics.height}</Text>
-            <Text style={styles.metricLabel}>cm</Text>
-          </View>
-
-          <View style={[styles.metricCard, styles.metricCardMint]}>
-            <Text style={styles.metricValue}>{client.metrics.bodyFat}</Text>
-            <Text style={styles.metricLabel}>% BF</Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Workouts</Text>
-          <Pressable
-            style={({ pressed }) => [styles.createButton, pressed && styles.buttonPressed]}
-            onPress={() => {
-              router.push({
-                pathname: "/coach/create-plan",
-                params: { clientId: clientId },
-              });
-            }}
-          >
-            <Text style={styles.createButtonText}>Create Plan</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.workoutList}>
-          {client.workoutPlans.map((workout) => (
-            <View key={workout.id} style={styles.workoutCard}>
-              <View style={styles.workoutHeader}>
-                <Text style={styles.workoutTitle}>{workout.title}</Text>
-                <View style={styles.statusBadge}>
-                  <Text style={styles.statusText}>Assigned</Text>
-                </View>
-              </View>
-              <Text style={styles.workoutDescription}>{workout.description}</Text>
-              <Text style={styles.workoutDate}>{workout.date}</Text>
+        <View style={styles.profileCard}>
+          <View style={styles.avatarContainer}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {client?.name
+                  .split(" ")
+                  .map((n: string) => n[0])
+                  .join("")
+                  .toUpperCase()}
+              </Text>
             </View>
-          ))}
+          </View>
+
+          <Text style={styles.clientName}>{client?.name}</Text>
+          <Text style={styles.clientEmail}>{client?.email}</Text>
         </View>
-      </View>
-    </ScrollView>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Metrics</Text>
+          <View style={styles.metricsGrid}>
+            <View style={[styles.metricCard, styles.metricCardMint]}>
+              <Text style={styles.metricValue}>{user?.metrics?.weight || 0}</Text>
+              <Text style={styles.metricLabel}>kg</Text>
+            </View>
+
+            <View style={[styles.metricCard, styles.metricCardMint]}>
+              <Text style={styles.metricValue}>{user?.metrics?.height || 0}</Text>
+              <Text style={styles.metricLabel}>cm</Text>
+            </View>
+
+            <View style={[styles.metricCard, styles.metricCardMint]}>
+              <Text style={styles.metricValue}>{user?.metrics?.bodyFat || 0}</Text>
+              <Text style={styles.metricLabel}>% BF</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Workouts</Text>
+            <Pressable
+              style={({ pressed }) => [styles.createButton, pressed && styles.buttonPressed]}
+              onPress={() => {
+                router.push({
+                  pathname: "/coach/create-plan",
+                  params: { clientId: clientId },
+                });
+              }}
+            >
+              <Text style={styles.createButtonText}>Create Plan</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.workoutList}>
+            {isLoading && (
+              <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color="#00D9C0" />
+                <Text style={styles.stateText}>Loading plans...</Text>
+              </View>
+            )}
+
+            {isError && (
+              <View style={styles.centerContainer}>
+                <Text style={styles.errorText}>Failed to load plans</Text>
+                <Text style={styles.stateSubtext}>Please try again later</Text>
+              </View>
+            )}
+
+            {!isLoading && !isError && (!plans || plans.length === 0) && (
+              <View style={styles.centerContainer}>
+                <Text style={styles.emptyText}>No plans yet</Text>
+                <Text style={styles.stateSubtext}>Create a plan to get started</Text>
+              </View>
+            )}
+
+            {!isLoading && !isError && plans && Array.isArray(plans) && plans.length > 0 && (
+              <>
+                {plans.map((plan: Plan) => (
+                  <PlanItem
+                    key={plan.id}
+                    plan={plan}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onUnassign={handleUnassign}
+                  />
+                ))}
+              </>
+            )}
+          </View>
+        </View>
+      </ScrollView>
+
+      <ConfirmModal
+        visible={confirmAction !== null}
+        title={
+          confirmAction?.type === "delete"
+            ? "Delete Plan"
+            : "Unassign Plan"
+        }
+        message={
+          confirmAction?.type === "delete"
+            ? `Are you sure you want to delete "${confirmAction?.planTitle}"? This action cannot be undone.`
+            : `Are you sure you want to unassign "${confirmAction?.planTitle}" from this client?`
+        }
+        confirmText={confirmAction?.type === "delete" ? "Delete" : "Unassign"}
+        confirmStyle={confirmAction?.type === "delete" ? "danger" : "default"}
+        onConfirm={handleConfirm}
+        onCancel={() => setConfirmAction(null)}
+      />
     </SafeAreaView>
   );
 }
@@ -242,45 +326,31 @@ const styles = StyleSheet.create({
   workoutList: {
     gap: 16,
   },
-  workoutCard: {
-    padding: 20,
-    borderWidth: 4,
-    borderColor: "#000000",
-    backgroundColor: "#FFFFFF",
+  centerContainer: {
+    padding: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  workoutHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 12,
-  },
-  workoutTitle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: "700",
+  stateText: {
+    fontSize: 16,
+    fontWeight: "600",
     color: "#000000",
+    marginTop: 12,
   },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: "#C8F5C8",
-    borderWidth: 2,
-    borderColor: "#000000",
+  errorText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FF4444",
+    marginBottom: 8,
   },
-  statusText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#000000",
-    letterSpacing: 0.5,
-  },
-  workoutDescription: {
-    fontSize: 14,
-    fontWeight: "400",
+  emptyText: {
+    fontSize: 16,
+    fontWeight: "600",
     color: "#666666",
     marginBottom: 8,
   },
-  workoutDate: {
-    fontSize: 12,
+  stateSubtext: {
+    fontSize: 14,
     fontWeight: "400",
     color: "#999999",
   },
