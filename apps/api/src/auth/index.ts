@@ -73,6 +73,26 @@ export function createAuth() {
           required: false,
           input: true,
         },
+        imgUrl: {
+          type: "string",
+          required: false,
+          input: true,
+        },
+        currentWeight: {
+          type: "number",
+          required: false,
+          input: false,
+        },
+        height: {
+          type: "number",
+          required: false,
+          input: true,
+        },
+        currentBodyFatPercentage: {
+          type: "number",
+          required: false,
+          input: false,
+        },
       },
     },
 
