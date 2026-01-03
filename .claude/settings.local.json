@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc --noEmit)"
+      "Bash(npx tsc --noEmit)",
+      "Bash(cat:*)",
+      "Bash(pnpm run dev)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm --filter @lift-logic/types build:*)",
+      "Bash(mkdir:*)",
+      "Bash(pnpm --filter @lift-logic/utils install)",
+      "Bash(pnpm --filter @lift-logic/utils build:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm --filter @lift-logic/web install:*)",
+      "Bash(pnpm --filter @lift-logic/types build:types:*)",
+      "Bash(pnpm --filter mobile add:*)",
+      "Bash(tree:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

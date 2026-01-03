@@ -1,4 +1,6 @@
 import type { Context, Next } from "hono";
+import type { User, Session } from "@lift-logic/types";
+import { safetry } from "@lift-logic/utils";
 import { createAuth, type Auth } from "../auth";
 
 let auth: Auth | null = null;
@@ -17,15 +19,15 @@ export function getAuth(): Auth {
 }
 
 export type AuthVariables = {
-  user: ReturnType<typeof getAuth>["$Infer"]["Session"]["user"] | null;
-  session: ReturnType<typeof getAuth>["$Infer"]["Session"]["session"] | null;
+  user: User | null;
+  session: Session | null;
 };
 
 export async function authMiddleware(c: Context, next: Next) {
   const authInstance = getAuth();
-  const session = await authInstance.api.getSession({ headers: c.req.raw.headers });
+  const [error, session] = await safetry(authInstance.api.getSession({ headers: c.req.raw.headers }));
 
-  if (!session) {
+  if (error || !session) {
     c.set("user", null);
     c.set("session", null);
     return next();

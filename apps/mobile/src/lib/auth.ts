@@ -1,10 +1,12 @@
 import { createAuthClient } from "better-auth/react";
 import * as SecureStore from "expo-secure-store";
+import type { User } from "@lift-logic/types";
 
 import { API_URL } from "../config";
 import isProduction from "../utils/isProduction";
 
 const TOKEN_KEY = "auth_access_token";
+const USER_DATA_KEY = "auth_user_data";
 
 const PROD_ORIGIN = "https://app.yourdomain.com";
 
@@ -18,6 +20,19 @@ export async function getToken(): Promise<string | null> {
 
 export async function removeToken(): Promise<void> {
   await SecureStore.deleteItemAsync(TOKEN_KEY);
+}
+
+export async function setUserData(user: User): Promise<void> {
+  await SecureStore.setItemAsync(USER_DATA_KEY, JSON.stringify(user));
+}
+
+export async function getUserData(): Promise<User | null> {
+  const data = await SecureStore.getItemAsync(USER_DATA_KEY);
+  return data ? JSON.parse(data) : null;
+}
+
+export async function removeUserData(): Promise<void> {
+  await SecureStore.deleteItemAsync(USER_DATA_KEY);
 }
 
 export const authClient = createAuthClient({

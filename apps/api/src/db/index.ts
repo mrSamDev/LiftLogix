@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { safetry } from "@lift-logic/utils";
 
 export async function connectDatabase(): Promise<void> {
   const mongoUri = process.env.MONGODB_URI;
@@ -7,11 +8,21 @@ export async function connectDatabase(): Promise<void> {
     throw new Error("MONGODB_URI environment variable is not set");
   }
 
-  await mongoose.connect(mongoUri);
+  const [error] = await safetry(mongoose.connect(mongoUri));
+
+  if (error) {
+    throw new Error(`Failed to connect to MongoDB: ${error.message}`);
+  }
+
   console.log("Connected to MongoDB");
 }
 
 export async function disconnectDatabase(): Promise<void> {
-  await mongoose.disconnect();
+  const [error] = await safetry(mongoose.disconnect());
+
+  if (error) {
+    throw new Error(`Failed to disconnect from MongoDB: ${error.message}`);
+  }
+
   console.log("Disconnected from MongoDB");
 }

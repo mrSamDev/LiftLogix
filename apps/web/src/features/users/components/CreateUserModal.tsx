@@ -1,0 +1,29 @@
+import type { User, UserInput } from "../types";
+import { CreateUserForm } from "./CreateUserForm";
+
+type CreateUserModalProps = {
+  organizations: any[];
+  coaches: User[];
+  onCancel: () => void;
+  onCreate: (user: UserInput) => void;
+};
+
+export function CreateUserModal({
+  organizations,
+  coaches,
+  onCancel,
+  onCreate,
+}: CreateUserModalProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto border-4 border-black bg-white">
+        <CreateUserForm
+          organizations={organizations}
+          coaches={coaches}
+          onCancel={onCancel}
+          onCreate={onCreate}
+        />
+      </div>
+    </div>
+  );
+}

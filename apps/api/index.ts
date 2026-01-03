@@ -1,3 +1,4 @@
+import { safetry } from "@lift-logic/utils";
 import app from "@src/server";
 import { connectDatabase } from "@src/db";
 import { initializeAuth } from "@src/middleware/auth";
@@ -17,7 +18,13 @@ async function startServer() {
   console.log(`Server is running on http://localhost:${PORT}`);
 }
 
-startServer().catch((err) => {
-  console.error("Failed to start server:", err);
-  process.exit(1);
-});
+async function main() {
+  const [error] = await safetry(startServer());
+
+  if (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+main();
