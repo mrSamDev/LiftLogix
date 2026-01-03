@@ -9,29 +9,13 @@ export default function CoachTabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: true,
+        title: `LiftLogix`,
+        tabBarLabel: "Dashboard",
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: `Welcome - ${coachName}`,
-          tabBarLabel: "Dashboard",
-        }}
-      />
-      <Tabs.Screen
-        name="clients"
-        options={{
-          title: `Welcome - ${coachName}`,
-          tabBarLabel: "Clients",
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: `Welcome - ${coachName}`,
-          tabBarLabel: "Profile",
-        }}
-      />
+      <Tabs.Screen name="index" options={{}} />
+      <Tabs.Screen name="clients" />
+      <Tabs.Screen name="profile" />
     </Tabs>
   );
 }

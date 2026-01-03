@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Stack, Redirect, useSegments, useRootNavigationState } from "expo-router";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { useAuthState } from "../src/store/authState";
+import { queryClient } from "../src/lib/queryClient";
 
 export default function RootLayout() {
   const segments = useSegments();
@@ -30,10 +32,12 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    />
+    <QueryClientProvider client={queryClient}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+    </QueryClientProvider>
   );
 }

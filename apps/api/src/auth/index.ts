@@ -67,6 +67,12 @@ export function createAuth() {
           required: false,
           input: true,
         },
+
+        coachId: {
+          type: "string",
+          required: false,
+          input: true,
+        },
       },
     },
 

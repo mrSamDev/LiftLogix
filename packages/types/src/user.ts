@@ -31,6 +31,7 @@ export const UserSchema = z.object({
   image: z.string().nullable().optional(),
   role: UserRoleSchema,
   unitPreference: z.literal("gram"),
+  isActive: z.boolean().optional(),
   orgId: z.string().optional(),
   coachId: z.string().nullable().optional(),
 });
@@ -50,6 +51,7 @@ export const userTransformer = {
       image: validated.image,
       role: validated.role,
       unitPreference: validated.unitPreference,
+      isActive: validated.isActive,
       orgId: validated.orgId,
       coachId: validated.coachId,
     };

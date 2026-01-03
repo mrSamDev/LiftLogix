@@ -66,6 +66,9 @@ importers:
       '@tanstack/react-form':
         specifier: ^1.27.7
         version: 1.27.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@tanstack/react-query':
+        specifier: ^5.90.16
+        version: 5.90.16(react@19.1.0)
       better-auth:
         specifier: ^1.4.10
         version: 1.4.10(mongodb@7.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.10)
@@ -7085,6 +7088,11 @@ snapshots:
       react: 19.2.3
     transitivePeerDependencies:
       - react-dom
+
+  '@tanstack/react-query@5.90.16(react@19.1.0)':
+    dependencies:
+      '@tanstack/query-core': 5.90.16
+      react: 19.1.0
 
   '@tanstack/react-query@5.90.16(react@19.2.3)':
     dependencies:

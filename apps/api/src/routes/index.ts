@@ -3,6 +3,7 @@ import type { Context } from "hono";
 import authroute from "@src/routes/auth";
 import usersroute from "@src/routes/users";
 import organizationsroute from "@src/routes/organizations";
+import coachroute from "@src/routes/coach";
 
 const routes = new Hono({}).basePath("/api");
 
@@ -13,5 +14,6 @@ routes.get("/health", (c: Context) => c.json({ status: "ok" }));
 routes.route("/", authroute);
 routes.route("/", usersroute);
 routes.route("/", organizationsroute);
+routes.route("/coach", coachroute);
 
 export default routes;

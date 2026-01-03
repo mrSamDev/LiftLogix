@@ -2,7 +2,8 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { UserUpdateSchema } from "@lift-logic/types";
 import { safetry } from "@lift-logic/utils";
-import { getAuth } from "@src/middleware/auth";
+import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
 
 const app = new Hono();
 
@@ -16,15 +17,24 @@ export default app.patch("/:id", zValidator("json", UserUpdateSchema), async (c)
     }, 400);
   }
 
-  const auth = getAuth();
+  const db = mongoose.connection.db;
+  if (!db) {
+    return c.json({
+      error: "Database connection not available"
+    }, 500);
+  }
 
   const [error, result] = await safetry(
-    auth.api.updateUser({
-      body: {
-        userId,
-        ...data,
+    db.collection("user").findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          ...data,
+          updatedAt: new Date()
+        }
       },
-    })
+      { returnDocument: "after" }
+    )
   );
 
   if (error) {
@@ -32,6 +42,12 @@ export default app.patch("/:id", zValidator("json", UserUpdateSchema), async (c)
       error: "Failed to update user",
       message: error.message
     }, 400);
+  }
+
+  if (!result) {
+    return c.json({
+      error: "User not found"
+    }, 404);
   }
 
   return c.json(result, 200);

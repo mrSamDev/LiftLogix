@@ -25,9 +25,7 @@ export type AuthVariables = {
 
 export async function authMiddleware(c: Context, next: Next) {
   const authInstance = getAuth();
-  const [error, session] = await safetry(
-    authInstance.api.getSession({ headers: c.req.raw.headers })
-  );
+  const [error, session] = await safetry(authInstance.api.getSession({ headers: c.req.raw.headers }));
 
   if (error || !session) {
     c.set("user", null);
