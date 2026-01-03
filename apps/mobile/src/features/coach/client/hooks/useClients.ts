@@ -19,7 +19,6 @@ export function useClients() {
     queryKey: ["coach", "clients"],
     queryFn: async () => {
       const apiData = await apiFetch<ClientsAPIResponse>("/coach/clients");
-      console.log("apiData: ", apiData);
       return clientTransformer.fromAPIList(apiData.clients);
     },
   });

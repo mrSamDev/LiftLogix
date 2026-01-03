@@ -12,7 +12,9 @@
       "Bash(pnpm install:*)",
       "Bash(pnpm --filter @lift-logic/web install:*)",
       "Bash(pnpm --filter @lift-logic/types build:types:*)",
-      "Bash(pnpm --filter mobile add:*)"
+      "Bash(pnpm --filter mobile add:*)",
+      "Bash(tree:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

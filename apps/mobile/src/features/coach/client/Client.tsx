@@ -1,7 +1,9 @@
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
 import { useClients } from "./hooks/useClients";
 
 export function Client() {
+  const router = useRouter();
   const { data: clients, isLoading, error } = useClients();
 
   if (isLoading) {
@@ -27,7 +29,11 @@ export function Client() {
         <Text style={styles.sectionTitle}>ALL CLIENTS</Text>
         <View style={styles.clientList}>
           {clients?.map((client) => (
-            <Pressable key={client.id} style={({ pressed }) => [styles.clientCard, pressed && styles.clientCardPressed]}>
+            <Pressable
+              key={client.id}
+              style={({ pressed }) => [styles.clientCard, pressed && styles.clientCardPressed]}
+              onPress={() => router.push(`/coach/client-details?id=${client.id}`)}
+            >
               <View style={styles.clientInfo}>
                 <Text style={styles.clientName}>{client.name}</Text>
                 <Text style={styles.clientEmail}>{client.email}</Text>
