@@ -7,6 +7,7 @@ import coachroute from "@src/routes/coach";
 import exercisesroute from "@src/routes/exercises";
 import plansroute from "@src/routes/plans";
 import clientsroute from "@src/routes/clients";
+import homeroute from "@src/routes/home";
 
 const routes = new Hono({}).basePath("/api");
 
@@ -21,5 +22,6 @@ routes.route("/coach", coachroute);
 routes.route("/", exercisesroute);
 routes.route("/", plansroute);
 routes.route("/", clientsroute);
+routes.route("/", homeroute);
 
 export default routes;

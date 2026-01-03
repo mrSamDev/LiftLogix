@@ -1,8 +1,8 @@
 interface ApiExercise {
   _id: string;
   title: string;
-  thumbnail_url?: string;
-  video_url?: string;
+  thumbnailUrl?: string;
+  videoUrl?: string;
   description: string;
 }
 
@@ -19,8 +19,8 @@ export const exerciseTransformer = {
     return {
       id: apiData._id,
       title: apiData.title,
-      thumbnailUrl: apiData.thumbnail_url,
-      videoUrl: apiData.video_url,
+      thumbnailUrl: apiData.thumbnailUrl,
+      videoUrl: apiData.videoUrl,
       description: apiData.description,
     };
   },

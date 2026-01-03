@@ -7,11 +7,11 @@ const exerciseTransformer = {
   fromAPI: (apiExercise: ApiExercise): Exercise => ({
     id: apiExercise._id,
     title: apiExercise.title,
-    thumbnailUrl: apiExercise.thumbnail_url,
-    videoUrl: apiExercise.video_url,
+    thumbnailUrl: apiExercise.thumbnailUrl,
+    videoUrl: apiExercise.videoUrl,
     description: apiExercise.description,
-    createdAt: new Date(apiExercise.created_at),
-    updatedAt: new Date(apiExercise.updated_at),
+    createdAt: new Date(apiExercise.createdAt),
+    updatedAt: new Date(apiExercise.updatedAt),
   }),
 };
 

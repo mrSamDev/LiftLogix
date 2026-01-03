@@ -38,6 +38,7 @@ export interface UpdatePlanInput extends z.infer<typeof UpdatePlanInputSchema> {
 export const PlanSchema = z.object({
   id: z.string(),
   clientId: z.string(),
+  coachId: z.string().optional(),
   title: z.string(),
   description: z.string().optional(),
   exercises: z.array(PlanExerciseSchema),
@@ -52,15 +53,16 @@ export interface Plan extends z.infer<typeof PlanSchema> {}
 
 export const ApiPlanSchema = z.object({
   _id: z.string(),
-  client_id: z.string(),
+  clientId: z.string(),
+  coachId: z.string().optional(),
   title: z.string(),
   description: z.string().optional(),
   exercises: z.array(PlanExerciseSchema),
-  is_public: z.boolean(),
-  plan_notes: z.string().optional(),
-  scheduled_date: z.string().optional(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  isPublic: z.boolean(),
+  planNotes: z.string().optional(),
+  scheduledDate: z.string().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export interface ApiPlan extends z.infer<typeof ApiPlanSchema> {}

@@ -20,7 +20,7 @@ export default function RootLayout() {
   const isCoachRoute = user?.role === "coach";
   const isUserRoute = user?.role === "user";
   const isOnCoachRoute = segments[0] === "coach";
-  const isOnUserRoute = segments[0] === "user";
+  const isOnUserRoute = segments[0] === "clients";
 
   if (!isAuthenticated && !isAuthRoute) {
     return <Redirect href="/login" />;
@@ -31,7 +31,7 @@ export default function RootLayout() {
   }
 
   if (isAuthenticated && isUserRoute && !isOnUserRoute) {
-    return <Redirect href="/user/(tabs)" />;
+    return <Redirect href="/clients/(tabs)" />;
   }
 
   if (isAuthenticated && isAuthRoute) {

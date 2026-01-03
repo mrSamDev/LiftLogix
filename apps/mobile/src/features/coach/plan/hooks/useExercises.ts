@@ -6,8 +6,8 @@ interface ApiExercisesResponse {
   exercises: Array<{
     _id: string;
     title: string;
-    thumbnail_url?: string;
-    video_url?: string;
+    thumbnailUrl?: string;
+    videoUrl?: string;
     description: string;
   }>;
 }

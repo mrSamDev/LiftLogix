@@ -22,15 +22,16 @@ export const planTransformer = {
   fromAPI(apiData: ApiPlan): Plan {
     return {
       id: apiData._id,
-      clientId: apiData.client_id,
+      clientId: apiData.clientId,
+      coachId: apiData.coachId,
       title: apiData.title,
       description: apiData.description,
       exercises: apiData.exercises,
-      isPublic: apiData.is_public,
-      planNotes: apiData.plan_notes,
-      scheduledDate: apiData.scheduled_date,
-      createdAt: new Date(apiData.created_at),
-      updatedAt: new Date(apiData.updated_at),
+      isPublic: apiData.isPublic,
+      planNotes: apiData.planNotes,
+      scheduledDate: apiData.scheduledDate,
+      createdAt: new Date(apiData.createdAt),
+      updatedAt: new Date(apiData.updatedAt),
     };
   },
 

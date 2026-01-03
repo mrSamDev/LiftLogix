@@ -24,8 +24,8 @@ export async function createPlan(c: Context) {
     isPublic: data.isPublic,
     planNotes: data.planNotes,
     scheduledDate: data.scheduledDate,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 
   const [error, result] = await safetry(db.collection("plans").insertOne(plan));
@@ -111,15 +111,15 @@ export async function updatePlan(c: Context) {
   }
 
   const updates: Record<string, unknown> = {
-    updated_at: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 
   if (data.title !== undefined) updates.title = data.title;
   if (data.description !== undefined) updates.description = data.description;
   if (data.exercises !== undefined) updates.exercises = data.exercises;
-  if (data.isPublic !== undefined) updates.is_public = data.isPublic;
-  if (data.planNotes !== undefined) updates.plan_notes = data.planNotes;
-  if (data.scheduledDate !== undefined) updates.scheduled_date = data.scheduledDate;
+  if (data.isPublic !== undefined) updates.isPublic = data.isPublic;
+  if (data.planNotes !== undefined) updates.planNotes = data.planNotes;
+  if (data.scheduledDate !== undefined) updates.scheduledDate = data.scheduledDate;
 
   const [error, result] = await safetry(db.collection("plans").findOneAndUpdate({ _id: new ObjectId(id) }, { $set: updates }, { returnDocument: "after" }));
 

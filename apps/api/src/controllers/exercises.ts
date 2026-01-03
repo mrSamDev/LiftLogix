@@ -66,11 +66,11 @@ export async function createExercise(c: Context) {
 
   const exercise = {
     title: data.title,
-    thumbnail_url: data.thumbnailUrl,
-    video_url: data.videoUrl,
+    thumbnailUrl: data.thumbnailUrl,
+    videoUrl: data.videoUrl,
     description: data.description,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 
   const [error, result] = await safetry(db.collection("exercises").insertOne(exercise));

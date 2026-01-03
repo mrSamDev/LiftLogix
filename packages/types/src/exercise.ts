@@ -27,8 +27,8 @@ export const ApiExerciseSchema = z.object({
   thumbnailUrl: z.string().optional(),
   videoUrl: z.string().optional(),
   description: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export interface ApiExercise extends z.infer<typeof ApiExerciseSchema> {}

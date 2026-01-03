@@ -13,22 +13,23 @@ interface ApiPlan {
   isPublic: boolean;
   planNotes?: string;
   scheduledDate?: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 function transformApiPlan(apiPlan: ApiPlan): Plan {
   return {
     id: apiPlan._id,
     clientId: apiPlan.clientId,
+    coachId: apiPlan.coachId,
     title: apiPlan.title,
     description: apiPlan.description,
     exercises: apiPlan.exercises,
     isPublic: apiPlan.isPublic,
     planNotes: apiPlan.planNotes,
     scheduledDate: apiPlan.scheduledDate,
-    createdAt: new Date(apiPlan.created_at),
-    updatedAt: new Date(apiPlan.updated_at),
+    createdAt: new Date(apiPlan.createdAt),
+    updatedAt: new Date(apiPlan.updatedAt),
   };
 }
 
