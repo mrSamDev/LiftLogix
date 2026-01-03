@@ -16,6 +16,7 @@ type UserTableProps = {
 
 export function UserTable({ users, coaches, currentUser, canAssignCoach, canDelete, onUpdateCoach, onDeleteUser }: UserTableProps) {
   const [assigningUserId, setAssigningUserId] = useState<string | null>(null);
+  console.log("assigningUserId: ", assigningUserId);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   const assigningUser = users.find((u) => u.id === assigningUserId);

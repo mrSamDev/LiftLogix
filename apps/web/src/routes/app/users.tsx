@@ -16,6 +16,7 @@ function Users() {
   const currentUser = session?.user || null;
 
   const { data: users = [], isLoading } = useUsers();
+  console.log("users: ", users);
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
@@ -58,6 +59,7 @@ function Users() {
         canAssignCoach={canAssignCoach(currentUser)}
         canDelete={canDeleteUser(currentUser)}
         onUpdateCoach={(userId, coachId) => {
+          console.log("userId, coachId: ", userId, coachId);
           updateUserMutation.mutate({ id: userId, updates: { coachId } });
         }}
         onDeleteUser={(userId) => {
