@@ -28,6 +28,7 @@ export async function apiFetch<T>(endpoint: string, options?: RequestInit): Prom
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));
+    console.log("errorBody: ", errorBody);
     const errorMessage = errorBody.error || errorBody.message || response.statusText || "Unknown error";
     throw new Error(errorMessage);
   }
